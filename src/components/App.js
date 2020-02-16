@@ -4,20 +4,18 @@ import "../App.css";
 import Header from "./Header";
 import Movie from "./Movie";
 import Search from "./Search";
-import { Swiper, Navigation, Pagination, Scrollbar } from 'swiper/js/swiper.esm.js';
-import 'swiper/css/swiper.css';
 
-Swiper.use([Navigation, Pagination, Scrollbar]);
+const nowPlayingURL = 'https://api.themoviedb.org/3/movie/now_playing?api_key=38344a322e81bd125e248f1782dd8aa0&language=en-US&page=1';
+const popularURL = 'https://api.themoviedb.org/3/movie/popular?api_key=38344a322e81bd125e248f1782dd8aa0&language=en-US&page=1';
+const upcomingURL = 'https://api.themoviedb.org/3/movie/upcoming?api_key=38344a322e81bd125e248f1782dd8aa0&language=en-US&page=1';
 
-const API_nowplaying_url = 'https://api.themoviedb.org/3/movie/now_playing?api_key=38344a322e81bd125e248f1782dd8aa0&language=en-US&page=1';
-const API_popular_url = 'https://api.themoviedb.org/3/movie/popular?api_key=38344a322e81bd125e248f1782dd8aa0&language=en-US&page=1';
-const API_upcoming_url = 'https://api.themoviedb.org/3/movie/upcoming?api_key=38344a322e81bd125e248f1782dd8aa0&language=en-US&page=1';
 const initialState = {
-  loading: true,
-  movies_nowplaying: [],
-  movies_popular: [],
-  movies_upcoming: [],
-  movies_search: [],
+  loading: false,
+  fetchLoading: true,
+  nowPlayingMovies: [],
+  popularMovies: [],
+  upcomingMovies: [],
+  searchResult: [],
   errorMessage: null
 };
 
@@ -34,7 +32,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         loading: false,
-        movies_search: action.payload,
+        searchResult: action.payload,
         errorMessage: null
       };
     
@@ -43,34 +41,41 @@ const reducer = (state, action) => {
         ...state,
         loading: false,
         errorMessage: action.error,
-        movies_search: []
-      };
-
-    case "GET_MOVIES_NOWPLAYING":
-      return {
-        ...state,
-        movies_search: [],
-        loading: false,
-        
-        movies_nowplaying: action.payload
-      };
-
-    case "GET_MOVIES_POPULAR":
-      return {
-        ...state,
-        movies_search: [],
-        loading: false,
-       
-        movies_popular: action.payload
+        searchResult: []
       };
     
-    case "GET_MOVIES_UPCOMING":
+    case "FETCH_MOVIE_REQUEST":
       return {
         ...state,
-        movies_search: [],
+        fetchLoading: true,
+        errorMessage: null,
+      };
+
+    case "GET_NOWPLAYING_MOVIES":
+      return {
+        ...state,
+        searchResult: [],
+        loading: false,
+        fetchLoading: false,
+        nowPlayingMovies: action.payload
+      };
+
+    case "GET_POPULAR_MOVIES":
+      return {
+        ...state,
+        searchResult: [],
+        loading: false,
+       
+        popularMovies: action.payload
+      };
+    
+    case "GET_UPCOMING_MOVIES":
+      return {
+        ...state,
+        searchResult: [],
         loading: false,
         
-        movies_upcoming: action.payload
+        upcomingMovies: action.payload
       };
 
     default:
@@ -82,63 +87,54 @@ const reducer = (state, action) => {
 const App = () => {
   const [state, dispatch] = useReducer(reducer,initialState);
 
-  useEffect(() => {
-    fetch(API_upcoming_url)
-        .then(response => response.json())
-        .then(data => {
-            dispatch({
-              type: 'GET_MOVIES_UPCOMING',
-              payload: data.results
-            });
-        });
-  }, []);
+  function getMovies(URL, type) {
+    dispatch({
+      type: 'FETCH_MOVIE_REQUEST'
+    });
+
+    fetch(URL)
+    .then(response => response.json())
+    .then(jsonData => {
+      dispatch({
+        type: type,
+        payload: jsonData.results
+      });
+    });
+  }; 
 
   useEffect(() => {
-      fetch(API_nowplaying_url)
-        .then(response => response.json())
-        .then(data => {
-
-            dispatch({
-              type: 'GET_MOVIES_NOWPLAYING',
-              payload: data.results
-            });
-        }); 
+    getMovies(upcomingURL, 'GET_UPCOMING_MOVIES');
+    getMovies(nowPlayingURL, 'GET_NOWPLAYING_MOVIES');
+    getMovies(popularURL, 'GET_POPULAR_MOVIES');
   }, []);
 
-  useEffect(() => {
-    fetch(API_popular_url)
-        .then(response => response.json())
-        .then(data => {
-            dispatch({
-              type: 'GET_MOVIES_POPULAR',
-              payload: data.results
-            });
-        });
-  }, []);
-
+  
   const movies_search_component = () => {
 
-    if (errorMessage != null) {
+    if (loading && !errorMessage) {
+      return <span>...</span>
+    }
+
+    else if (errorMessage) {
       return <h3 className="errorMessage">{errorMessage}</h3>
     }
 
     else {
-      if (movies_search.length > 0) {
-        return <Movie movies = {movies_search} />;
+      if (searchResult.length > 0) {
+        return <Movie movies = {searchResult} />;
       };
     };
   };
  
   const search = searchValue => {
-    console.log("searchvalue", searchValue);
+
     dispatch({
       type: 'SEARCH_REQUEST'
     });
 
-    fetch(`https://api.themoviedb.org/3/search/movie?api_key=38344a322e81bd125e248f1782dd8aa0&query=${searchValue}`)
+    fetch(`https://api.themoviedb.org/3/search/multi?api_key=38344a322e81bd125e248f1782dd8aa0&query=${searchValue}`)
       .then(response => response.json())
       .then(data => {
-        
         if (data.errors) {
           dispatch({
             type: "SEARCH_FAILURE",
@@ -146,7 +142,6 @@ const App = () => {
           });
           
         } else {
-
           if (data.total_results > 0) {
           dispatch({
             type: "SEARCH_SUCCESS",
@@ -158,14 +153,12 @@ const App = () => {
               error: `There is no movie named ${searchValue}`
             });
           };
-          
         }
     });
   };
 
-  const { loading, movies_nowplaying, movies_popular, movies_upcoming, movies_search, errorMessage } = state;
-  
-  
+  const { loading, fetchLoading, nowPlayingMovies, popularMovies, upcomingMovies, searchResult, errorMessage } = state;
+
   return (  
     <div className="App">
       <div className="m-container">
@@ -175,19 +168,19 @@ const App = () => {
 
         <p className="App-intro">WELCOME TO THIS MOVIE WEBSITE <br/> Find your favorite movies </p>
 
-        {movies_search_component()}
+        <div className="Movie-listing">
+          {movies_search_component()}
 
-        <Movie movies = {movies_nowplaying} title = "Now Playing" />
+          {fetchLoading && !errorMessage ? <span>...</span> : errorMessage ? <h3> {errorMessage}</h3> : <Movie movies = {nowPlayingMovies} title = "Now Playing" />}
 
-        <Movie movies = {movies_upcoming} title = "Upcoming" />
+          {fetchLoading && !errorMessage ? <span>...</span> : errorMessage ? <h3> {errorMessage}</h3> : <Movie movies = {popularMovies} title = "Popular" />}
 
-        <Movie movies = {movies_popular} title = "Popular" />
-
-        
-        
+          {fetchLoading && !errorMessage ? <span>...</span> : errorMessage ? <h3> {errorMessage}</h3> : <Movie movies = {upcomingMovies} title = "Upcoming" />}
+   
+        </div>
+       
       </div>
-    </div>
-  
+    </div>  
   );
 
 };
