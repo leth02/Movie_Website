@@ -1,0 +1,38 @@
+
+
+.swiper-container {
+    padding: 1rem .2rem 0;
+
+    .swiper-slide {
+        opacity: .8;
+        position: relative;
+        text-align: center;
+        transition: transform .2s;
+
+        
+
+        
+
+        &__detail-link {
+            text-decoration: none;
+
+            &__image {
+                border-radius: 5px;
+                width: auto;
+            }
+
+            &__title {
+                color: #fff;
+                font-family: sans-serif;
+                font-size: .9rem;
+            }
+            
+        }
+
+        &:hover {
+            opacity: 1;
+            transform: scale(1.05);
+            transition: transform .2s;
+        }
+    }
+}

@@ -1,0 +1,51 @@
+.App-header {
+    cursor: default;
+
+    display: grid;
+
+    grid-template-columns: [col1] 200px [col2] auto [col3] 250px [col4] auto [col5] 200px [col6];
+    grid-template-rows: [row1] 100% [row2];
+
+    .react_logo {
+        height: 100px;
+        width: 100px;
+        grid-column-start: col1;
+            grid-column-end: span col2;
+            grid-row-start: row1;
+            grid-row-end: row2;
+    }
+
+    .search-form {
+        align-items: center;
+
+        height: 40px;
+        
+        grid-column-start: col3;
+            grid-column-end: span col4;
+            grid-row-start: row1;
+            grid-row-end: row2;
+        &__input {
+            height: 50%;
+            border: 1px solid #4edae4;
+            width: 78%;
+            
+        }
+    
+        &__button {
+            height: 30px;
+            border: 1px solid #4edae4;
+
+            width: 20%;
+        }
+    }
+
+    .movieDB_logo {
+        grid-column-start: col5;
+            grid-column-end: span col6;
+            grid-row-start: row1;
+            grid-row-end: row2;
+    }
+}
+
+
+
