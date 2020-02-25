@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import "./Details.scss";
 import Movies from '../Movies/Movies';
 import Header from '../Header/Header';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 const imageURL = 'https://image.tmdb.org/t/p/original';
 const defaultURL = 'https://api.themoviedb.org/3/movie/';
@@ -46,7 +46,6 @@ const Details = () => {
 
     const getCredits = () => {
         if (credits.length != 0) {
-            console.log(credits, "wtf");
             return (
             <div className="cast-listing">
                 <span className="starring">Starring: </span>
@@ -62,10 +61,24 @@ const Details = () => {
         
     }
 
+    const getGenres = () => {
+        if (genres.length != 0) {
+            return (
+            <div className="genre-listing">
+                <span className="genres">Genres: </span>
+                <span className="list-items">
+                    <a href={google(genres[0])}>{genres[0]}, </a>
+                    <a href={google(genres[1])}>{genres[1]}</a>
+                </span>
+            </div>
+        );}
+        else {return <div>nulll</div>}
+        
+    }
+
     console.log(id);
     console.log(genres);
     console.log(credits);
-
 
     return (
         <div className="Details">
@@ -95,9 +108,9 @@ const Details = () => {
             {credits ? getCredits() : 'loading'}
             </div> }
 
-            {/*             <div className="item-details__header__movie-genres">
-            {genres ? genres : 'loading'}
-            </div> */}
+            {             <div className="item-details__header__movie-genres">
+            {genres ? getGenres() : 'loading'}
+            </div>}
 
             </header>
 

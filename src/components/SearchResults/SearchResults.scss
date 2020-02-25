@@ -1,7 +1,35 @@
-.search-results-main-header {
+.search-results {
+    .search-results-main-header {
 
-    &__title {
+        &__title {
+            text-align: center;
+            color: #fff;
+            font-size: 25px;
+            
+            span {
+                text-transform: uppercase;
+            }
+        }
+    
+        
+    }
+
+    .empty-input {
         text-align: center;
         color: #fff;
+        font-size: 30px;
     }
+
+    .invalid-input {
+        text-align: center;
+        color: #fff;
+        font-size: 30px;
+    }
+
+    .loading {
+        text-align: center;
+        color: #fff;
+        font-size: 30px;
+    }
+
 }

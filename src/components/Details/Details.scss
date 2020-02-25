@@ -50,6 +50,33 @@
             grid-row-end: row4;
         }
 
+        &__movie-genres {
+            color: #999;
+            font-size: 1.275vw;
+            font-family: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            
+            grid-column-start: col2;
+            grid-column-end: col4;
+            grid-row-start: row4;
+            grid-row-end: row5;
+
+            .genres {
+                font-family: 'Krona One' ;
+                font-weight: bolder;
+            }
+
+            a {
+                font-family: 'Krona One';
+                color: #999;
+                text-decoration: none;
+            }
+            
+            a:hover {
+                text-decoration: underline;
+                color: #fff;
+            }
+        }
+
         &__movie-credits {
             color: #999;
             font-size: 1.275vw;

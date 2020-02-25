@@ -42,7 +42,7 @@ const Header = (props) => {
                     type = "text"
                     placeholder="Movie title..."
                     />
-                    <Link className="button-link" to={`/search-results/${searchValue}`}>
+                    <Link className="button-link" to={searchValue ? `/search-results/${searchValue}` : `/search-results/no-result`}>
                     <button className="search-form__button" type="submit" value="SEARCH">
                     <FaSearch />
                     </button>
